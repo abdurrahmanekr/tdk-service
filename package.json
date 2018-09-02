@@ -13,6 +13,8 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
     "dom-parser": "^0.1.5",
+    "express": "^4.16.3",
+    "node-exceptions": "^3.0.0",
     "xmlhttprequest": "^1.8.0"
   }
 }

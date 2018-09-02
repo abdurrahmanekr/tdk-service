@@ -1,11 +1,11 @@
-const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const fs = require('fs');
 const path = require('path');
+const express = require('express');
 
-const {
-    API_URL,
-    WORDS_DIR,
-} = require('./constants');
+const app = express();
+
+const WordService = require('./helpers/WordService');
+const ErrorService = require('./helpers/ErrorService');
 
 function getWord(str) {
 
@@ -31,4 +31,28 @@ function getWord(str) {
     xhr.send();
 }
 
-getWord('müdahale');
+app.get('/getWord/:word', (req, res) => {
+    console.log(req.params);
+    const reqWord = (req.params.word || '').trim();
+
+    WordService.getWordRaw(reqWord).then(html => {
+        const word = WordService.rawToWord(html);
+        console.log('SUCCESS "getWord/" - ', reqWord);
+
+        res.send(word);
+    })
+    .catch(err => {
+        console.log('ERROR', err.message);
+        res.status(err.status || 500);
+
+        res.send({
+            word: reqWord,
+            error: true,
+            message: err.message,
+        });
+    });
+})
+
+app.listen(1071, () => {
+    console.log('TDK server started.');
+})
