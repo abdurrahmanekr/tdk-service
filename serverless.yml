@@ -1,0 +1,19 @@
+# Author Avare Kodcu - 2/9/2018
+
+service: tdk-service
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  stage: dev
+
+functions:
+  getWord:
+    handler: handler.getWord
+    events:
+        - http:
+            path: getWord/{word}
+            method: get
+            cors:
+            origins:
+              - '*'

@@ -2,10 +2,10 @@
   "name": "tdk-bot",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "handler.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node handler.js"
   },
   "keywords": [],
   "author": "",
@@ -13,7 +13,6 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
     "dom-parser": "^0.1.5",
-    "express": "^4.16.3",
     "node-exceptions": "^3.0.0",
     "xmlhttprequest": "^1.8.0"
   }
