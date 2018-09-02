@@ -18,7 +18,7 @@ function getWord(str) {
                 if(err) {
                     return console.log(err);
                 }
-            }); 
+            });
             console.log('SUCCESS: ', str + ' word saved!');
         }
     };
@@ -31,4 +31,4 @@ function getWord(str) {
     xhr.send();
 }
 
-getWord('peşkeş');
+getWord('bek');
