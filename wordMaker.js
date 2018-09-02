@@ -21,6 +21,22 @@ function parseSubstantive($) {
         var title = table.children('thead').children('tr').children('th');
         var name = title.children('b').html().trim();
         var type = title.children('i').children('b').html().split(',')[0].trim();
+
+        var colloquialism = false;
+
+
+        if (type.indexOf('halk ağzında') !== -1) {
+            type = type.replace('halk ağzında', '').trim();
+            colloquialism = true;
+        }
+
+        var pronunciation = name;
+
+        if (type.match(/\(.*\)/g) !== null) {
+            pronunciation = type.match(/\(.*\)/g)[0].replace(/[\(\)]/g, '');
+            type = type.replace(/\(.*\)/g, '').trim();
+        }
+
         var tags = title.children('i').children('b').html().split(',');
         tags.splice(0, 1);
         tags = tags.map(function (x) {
@@ -58,6 +74,8 @@ function parseSubstantive($) {
         result.push({
             name: name,
             type: type,
+            colloquialism: colloquialism,
+            pronunciation: pronunciation,
             tags: tags,
             descriptions: descriptions,
             etymon: etymon.length > 0 ? ({
@@ -88,4 +106,4 @@ function wordMaker(word) {
     })
 }
 
-wordMaker('bek');
+wordMaker('müdahale');

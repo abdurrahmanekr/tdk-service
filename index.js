@@ -31,4 +31,4 @@ function getWord(str) {
     xhr.send();
 }
 
-getWord('bek');
+getWord('müdahale');
