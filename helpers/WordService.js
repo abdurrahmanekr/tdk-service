@@ -68,6 +68,13 @@ const WordService = {
                 slang = true;
             }
 
+            var old = false;
+
+            if (type.indexOf('eskimiş') !== -1) {
+                type = type.replace('eskimiş', '').trim();
+                old = true;
+            }
+
             var pronunciation = name;
 
             if (type.match(/\(.*\)/g) !== null) {
@@ -115,6 +122,7 @@ const WordService = {
                 colloquialism: colloquialism,
                 pronunciation: pronunciation,
                 slang: slang,
+                old: old,
                 tags: tags,
                 descriptions: descriptions,
                 etymon: etymon.length > 0 ? ({
