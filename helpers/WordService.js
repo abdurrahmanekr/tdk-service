@@ -61,6 +61,13 @@ const WordService = {
                 colloquialism = true;
             }
 
+            var casual_speech = false;
+
+            if (type.indexOf('teklifsiz konuşmada') !== -1) {
+                type = type.replace('teklifsiz konuşmada', '').trim();
+                casual_speech = true;
+            }
+
             var slang = false;
 
             if (type.indexOf('kaba konuşmada') !== -1) {
@@ -123,6 +130,7 @@ const WordService = {
                 pronunciation: pronunciation,
                 slang: slang,
                 old: old,
+                casual_speech: casual_speech,
                 tags: tags,
                 descriptions: descriptions,
                 etymon: etymon.length > 0 ? ({
