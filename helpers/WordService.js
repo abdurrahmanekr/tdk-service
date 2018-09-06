@@ -75,6 +75,11 @@ const WordService = {
                 slang = true;
             }
 
+            if (type.indexOf('argo') !== -1) {
+                type = type.replace('argo', '').trim();
+                slang = true;
+            }
+
             var old = false;
 
             if (type.indexOf('eskimiş') !== -1) {
