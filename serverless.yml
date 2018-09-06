@@ -51,16 +51,10 @@ resources:
             -
               AttributeName: id
               AttributeType: S
-            -
-              AttributeName: word
-              AttributeType: S
           KeySchema:
             -
               AttributeName: id
               KeyType: HASH
-            -
-              AttributeName: word
-              KeyType: RANGE
           ProvisionedThroughput:
             ReadCapacityUnits: 1
             WriteCapacityUnits: 1

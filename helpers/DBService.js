@@ -22,7 +22,7 @@ const DBService = {
         var params = {
             TableName: CNF.tableName,
             Key: {
-                word: word,
+                id: word,
             },
         };
 
@@ -48,8 +48,7 @@ const DBService = {
         var params = {
             TableName: CNF.tableName,
             Item: {
-                id: String(+new Date()),
-                word: String(word),
+                id: String(word),
                 data: data,
             },
         };
@@ -60,7 +59,7 @@ const DBService = {
 
             if (data && data.Item) {
                 var updateParams = {
-                    TableName: 'EPISODES_TABLE',
+                    TableName: CNF.tableName,
                     Key: {
                         'word': String(word),
                     },

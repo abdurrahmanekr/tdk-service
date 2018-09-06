@@ -9,7 +9,7 @@ module.exports.getWord = (event, context, callback) => {
         if (!err && data && data.Item) {
             callback(null, {
                 statusCode: 200,
-                body: JSON.stringify(data.Item.word),
+                body: JSON.stringify(data.Item.data),
             });
         }
         else {
