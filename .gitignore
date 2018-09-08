@@ -4,3 +4,7 @@ jspm_packages
 
 # Serverless directories
 .serverless
+
+# TDK files
+words
+words_json

@@ -2,6 +2,8 @@ const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 const {
     API_URL,
+    TDK_WORD_LIST_URL,
+    AWS_API_URL,
     WORDS_DIR,
 } = require('../constants');
 
@@ -10,29 +12,109 @@ const NE = require('node-exceptions')
 
 const WordService = {
     /*
-     * Tdk'nın sitesinden istenilen kelimenin sayfasını raw olarak getirir
+     * Tdk'nın sitesinden istenilen kelimenin sayfasını veya arama listesini raw olarak getirir
      * @param {string} word - getirilecek gelime
+     * @param {string} type - bu kelime ile başlayan gelimelerin listesini getirmeyi sağlar
+     * @param {string} page - sayfa
     */
-    getWordRaw: (word) => {
+    getWordRaw: (word, type = 'word', page = '') => {
         return new Promise((resolve, reject) => {
-            var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (this.readyState == 4) {
-                    if (this.status === 200) {
-                        resolve(xhr.responseText);
+            var errorCount = 0;
+
+            var sendError = () => {
+                reject(new NE.HttpException('TDK request error.', 500));
+            };
+
+            var sendRequest = () => {
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function() {
+                    if (this.readyState == 4) {
+                        if (this.status === 200) {
+                            resolve(xhr.responseText);
+                        }
+                    }
+                };
+
+                var open = () => {
+                    switch (type) {
+                        case 'word':
+                            xhr.open("GET", API_URL.replace('WORD', encodeURI(word)), true);
+                            break;
+                        case 'word_list':
+                            xhr.open("GET", TDK_WORD_LIST_URL.replace('WORD', encodeURI(word)).replace('PAGE', page), true);
+                            break;
+                    }
+                };
+
+                xhr.onerror = function(err) {
+                    console.log('TDK request error, Trying again.');
+                    if (errorCount++ < 10) {
+                        setTimeout(() => {
+                            sendRequest();
+                        }, 5500);
                     }
                     else {
-                        reject(new NE.HttpException('TDK request error.', 500));
+                        sendError();
                     }
-                }
+                };
+                open();
+
+                xhr.send();
             };
 
-            xhr.onerror = function(err) {
-                reject(err);
+            sendRequest();
+
+        });
+    },
+
+    /*
+     * AWS üzerinde açık olan servise istek atar ve kaydedilmesini sağlar
+     * @param {string} word - kaydedilecek gelime
+    */
+    saveWord: (word) => {
+        return new Promise((resolve, reject) => {
+            var errorCount = 0;
+
+            var sendError = () => {
+                reject(new NE.HttpException('AWS request error.', 500));
             };
 
-            xhr.open("GET", API_URL.replace('WORD', encodeURI(word)), true);
-            xhr.send();
+            var sendRequest = () => {
+                var data = null;
+
+                var xhr = new XMLHttpRequest();
+
+                xhr.addEventListener("readystatechange", function () {
+                    if (this.readyState == 4) {
+                        if (this.status === 200) {
+                            resolve(xhr.responseText);
+                        }
+                    }
+                });
+
+                xhr.onerror = function(err) {
+                    console.log('AWS request error, Trying again.', err);
+                    if (errorCount++ < 10) {
+                        setTimeout(() => {
+                            sendRequest();
+                        }, 5500);
+                    }
+                    else {
+                        sendError();
+                    }
+                };
+
+                const URL = AWS_API_URL.replace('WORD', encodeURI(word));
+
+                xhr.open("GET", URL);
+
+                console.log(word, URL);
+
+                xhr.send(data);
+            };
+
+            sendRequest();
+
         });
     },
 
@@ -149,6 +231,77 @@ const WordService = {
             return result;
 
         throw new NE.HttpException('Word not found', 404);
+    },
+
+    /*
+     * Tdk'nın sitesinden bu kelime ile başlayan kelimelerin hepsini listesini
+     * @param {string} word - aranacak kelime
+     * @param {string} page - aranacak kelimenin hangi sayfada olduğu
+    */
+    getFirstWord: (word, page) => {
+        return new Promise((resolve, reject) => {
+            WordService.getWordRaw(word, 'word_list', page).then(raw => {
+                var list = WordService.rawToWordList(raw);
+                var result = list.data;
+
+                console.log(list.page, list.max, list.final, list.nextPage);
+
+                // bitmemişse
+                if (!list.final) {
+                    WordService.getFirstWord(word, list.nextPage).then(res => {
+                        resolve(result.concat(res));
+                    })
+                }
+                else {
+                    resolve(result);
+                }
+            })
+            .catch(err => {
+                console.log('parçalarken sorun', err);
+            });
+        })
+    },
+
+    /*
+     * Tdk'nın sitesinden getirilen raw listesinin içindeki gelimeleri parçalar
+     * @param {string} raw - tdk kelime sayfasından gelen raw html değer
+    */
+    rawToWordList: (raw) => {
+        var $ = cheerio.load(raw, {
+            decodeEntities: false
+        });
+
+        var konts = $('select[name=konts]');
+        page = konts.children('option[selected]').text().trim();
+
+        var nextPage = konts.children('option').eq(parseInt(page) === 1 ? 2 : parseInt(page) + 1);
+
+        nextPage = nextPage ? nextPage.attr('value') : null;
+
+        var max = konts.children('option').last().text().trim();
+
+        var result = [];
+
+        $('p.thomicb').map((i, elem) => {
+            var p = $(elem);
+
+            var word = p.children('a').eq(1).text();
+
+            word = word.split(',')[0].split('(')[0].trim();
+
+            result.push(word);
+        });
+
+        if (result.length > 0)
+            return {
+                page: parseInt(page),
+                nextPage: parseInt(nextPage),
+                max: parseInt(max),
+                final: page === max,
+                data: result,
+            };
+
+        throw new NE.HttpException('Word list not found', 404);
     },
 };
 

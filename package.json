@@ -15,5 +15,8 @@
     "dom-parser": "^0.1.5",
     "node-exceptions": "^3.0.0",
     "xmlhttprequest": "^1.8.0"
+  },
+  "devDependencies": {
+    "async": "^2.6.1"
   }
 }

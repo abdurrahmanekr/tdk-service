@@ -38,8 +38,8 @@ functions:
             path: getWord
             method: get
             cors:
-            origins:
-              - '*'
+              origins:
+                - '*'
 
 resources:
     Resources:
