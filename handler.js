@@ -3,7 +3,7 @@ const DBService = require('./helpers/DBService');
 
 
 module.exports.getWord = (event, context, callback) => {
-    const reqWord = (event.pathParameters.word || '').trim();
+    const reqWord = (event.queryStringParameters.word || '').trim();
 
     DBService.get(reqWord, (err, data) => {
         if (!err && data && data.Item) {
