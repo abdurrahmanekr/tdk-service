@@ -89,6 +89,20 @@ const WordService = {
                         if (this.status === 200) {
                             resolve(xhr.responseText);
                         }
+                        else if (this.status === 404) {
+                            resolve("[]");
+                        }
+                        else {
+                            console.log('AWS request error, Trying again.');
+                            if (errorCount++ < 10) {
+                                setTimeout(() => {
+                                    sendRequest();
+                                }, 5500);
+                            }
+                            else {
+                                sendError();
+                            }
+                        }
                     }
                 });
 
