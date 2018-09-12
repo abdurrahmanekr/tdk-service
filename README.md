@@ -78,6 +78,7 @@ Cevap:
 }]
 
 ```
+
 ### Ana Değerler
 
 | Anahtar | Anlamı |
