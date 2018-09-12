@@ -3,7 +3,6 @@ const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const {
     API_URL,
     TDK_WORD_LIST_URL,
-    AWS_API_URL,
     WORDS_DIR,
 } = require('../constants');
 
@@ -60,71 +59,6 @@ const WordService = {
                 open();
 
                 xhr.send();
-            };
-
-            sendRequest();
-
-        });
-    },
-
-    /*
-     * AWS üzerinde açık olan servise istek atar ve kaydedilmesini sağlar
-     * @param {string} word - kaydedilecek gelime
-    */
-    saveWord: (word) => {
-        return new Promise((resolve, reject) => {
-            var errorCount = 0;
-
-            var sendError = () => {
-                reject(new NE.HttpException('AWS request error.', 500));
-            };
-
-            var sendRequest = () => {
-                var data = null;
-
-                var xhr = new XMLHttpRequest();
-
-                xhr.addEventListener("readystatechange", function () {
-                    if (this.readyState == 4) {
-                        if (this.status === 200) {
-                            resolve(xhr.responseText);
-                        }
-                        else if (this.status === 404) {
-                            resolve("[]");
-                        }
-                        else {
-                            console.log('AWS request error, Trying again.');
-                            if (errorCount++ < 10) {
-                                setTimeout(() => {
-                                    sendRequest();
-                                }, 5500);
-                            }
-                            else {
-                                sendError();
-                            }
-                        }
-                    }
-                });
-
-                xhr.onerror = function(err) {
-                    console.log('AWS request error, Trying again.', err);
-                    if (errorCount++ < 10) {
-                        setTimeout(() => {
-                            sendRequest();
-                        }, 5500);
-                    }
-                    else {
-                        sendError();
-                    }
-                };
-
-                const URL = AWS_API_URL.replace('WORD', encodeURI(word));
-
-                xhr.open("GET", URL);
-
-                console.log(word, URL);
-
-                xhr.send(data);
             };
 
             sendRequest();
