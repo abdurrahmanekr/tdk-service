@@ -79,8 +79,7 @@ Cevap:
 
 ```
 
-### Ana Değerler
-
+### Ana Değerler
 | Anahtar | Anlamı |
 | --- | --- |
 | pronunciation | okunuş |
