@@ -1,3 +1,6 @@
+# DİKKAT! Kullanımdan Kaldırıldı.
+Detaylı bilgi için [#3](https://github.com/abdurrahmanekr/tdk-service/issues/3)
+
 # TDK Service
 Türk Dil Kurumu'nun resmi sitesi üzerinden belirli standartlara göre veri getirebilen bir servis.
 
